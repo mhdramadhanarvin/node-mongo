@@ -1,0 +1,44 @@
+version: "3.7"
+
+services:
+  database:
+    container_name: database_mongo
+    # image: mongo:latest
+    build:
+      context: ./
+      dockerfile: database.mongo
+    image: database_monogo:1.0
+    ports:
+      - 27017:27017
+    networks:
+      - node_networks
+    volumes:
+      - ./:/var/www
+  app:
+    container_name: app_node
+    # image: node_app:1.0
+    build:
+      context: ./
+      dockerfile: app.node
+    image: app_node:1.0
+    ports:
+      - 8080:8080
+    depends_on:
+      - database
+    networks:
+      - node_networks
+    environment:
+      - PORT=8080
+      - HOST=localhost
+      - MONGODB_CLOUD=true
+      - MONGODB_HOST=database
+      - MONGODB_PORT=27017
+      - MONGODB_USERNAME=zanemy
+      - MONGODB_PASSWORD=admin123
+      - MONGODB_DBNAME=db-test
+    volumes:
+      - ./:/var/www
+
+networks:
+  node_networks:
+    name: node_networks
